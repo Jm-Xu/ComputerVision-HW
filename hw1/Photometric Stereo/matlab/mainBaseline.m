@@ -37,12 +37,12 @@ for testId = 1 : 4
     [Normal, Rou, n, r] = myPMS(data, m);
     
     [Pixs] = myRender(data, m, 1, n, r);
-    imwrite(Pixs, strcat(dataName, '1.png'));
+    imwrite(Pixs, strcat(dataName, '_Render.png'));
     
     %% Save results "png"
     imwrite(uint8((Normal+1)*128).*uint8(mask3), strcat(dataName, '_Normal.png'));
-    imwrite(uint8((Rou+1)*128).*uint8(mask3), strcat(dataName, '_Rou.png'));
+    imwrite(Rou, strcat(dataName, '_Rou.png'));
 
     %% Save results "mat"
-    save(strcat(dataName, '_Normal.mat'), 'Normal');
+    % save(strcat(dataName, '_Normal.mat'), 'Normal');
 end

@@ -1,24 +1,22 @@
 function [N, R, normal, rou] = L2_PMS(data, m)
-pixs = zeros(size(data.imgs,1), length(m), 3);
+pixs = zeros(size(data.imgs,1), length(m));
 for i = 1:size(data.imgs,1)
-    pixs(i,:,:) = normal_img2vec(cell2mat(data.imgs(i)), m);
+    E = imread_datadir_re(data,i);
+    vec =  normal_img2vec(E, m);
+    Inten = 0.3*vec(:,1) + 0.6*vec(:,2) + 0.1*vec(:,3);
+    pixs(i,:) = Inten;
 end
 normal = zeros(length(m), 3);
-rou = zeros(length(m), 3);
-% imgmat = cell2mat(data.imgs(1:3));
-% data.imgs(1:3) * ((data.s(1:3) .* data.L(1:3, 1))^(-1));
+rou = zeros(length(m), 1);
 
-for color = 1:3
 for idx = 1:length(m)
-    [I, S, L] = mySelect(pixs, data ,idx, color, 1/5, 4/5);
-    % I = reshape(pixs(1:3,idx,1),[],1);
-    % rou_n = ((data.s(1:3) .* data.L(1:3, 1))^(-1)) * I;
-    sl = S .* L;
-    rou_n = (sl.' * sl)^-1 * sl.' * I;
+    % Dealing  with  shadows  and  highlights
+    [I, S] = mySelect(pixs, data ,idx, 1/5, 4/5);
+    rou_n = (S.' * S)^-1 * S.' * I;
     normal(idx,:) = rou_n ./ norm(rou_n);
-    rou(idx, color) = norm(rou_n);
+    rou(idx,1) = norm(rou_n);
 end
-end
+
 N = normal_vec2img(normal, size(data.mask,1), size(data.mask,2), m);
 R = rou2img(rou, size(data.mask,1), size(data.mask,2), m);
 end
