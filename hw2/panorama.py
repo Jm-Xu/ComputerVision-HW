@@ -2,11 +2,23 @@ import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
 
-def panorama(img1, img2, iters):
+def panorama(img1, img2, iters, descriptor='sift'):
     # Feature detection, descriptor
-    sift = cv.SIFT_create()
-    kp1, des1 = sift.detectAndCompute(img1, None)
-    kp2, des2 = sift.detectAndCompute(img2, None)
+    if descriptor == 'cpv':
+        # descriptor formed by concatenated pixel values
+        print('using descriptor formed by concatenated pixel values')
+        sift = cv.SIFT_create()
+        kp1 = sift.detect(img1, None)
+        des1 = np.array([cv.getRectSubPix(img1, (11, 11), kp.pt).reshape(-1) for kp in kp1])
+        kp2 = sift.detect(img2, None)
+        des2 = np.array([cv.getRectSubPix(img2, (11, 11), kp.pt).reshape(-1) for kp in kp2])
+
+    else:
+        # SIFT descriptor
+        print('using SIFT descriptor')
+        sift = cv.SIFT_create()
+        kp1, des1 = sift.detectAndCompute(img1, None)
+        kp2, des2 = sift.detectAndCompute(img2, None)
 
     # Feature matching with ratio test
     bf = cv.BFMatcher()
@@ -40,9 +52,12 @@ def panorama(img1, img2, iters):
     aff = cv.warpAffine(img2, affm, (tw, th))
     dst = cv.warpPerspective(img1, affm2.dot(H), (tw, th))
 
-    # res = np.zeros_like(aff)
+    # matrix operation for accelerating linear blending to decide overlapped regions
     zero_idx = np.where(dst == 0)
-    dst[zero_idx] += aff[zero_idx] 
+    dst[zero_idx] += aff[zero_idx]
+
+    # linear blending to decide overlapped regions
+    # res = np.zeros_like(aff) 
     # for i in range(aff.shape[0]):
     #     for j in range(aff.shape[1]):
     #         if aff[i, j] == 0 or dst[i ,j] == 0:

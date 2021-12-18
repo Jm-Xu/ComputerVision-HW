@@ -15,8 +15,9 @@ for root, dirs, files in os.walk(imgs_dir):
 pan_img = imgs_gray[0]
 res_imgs = imgs_gray[1:]
 
-for img in res_imgs:    
-    pan_img = panorama(img, pan_img, iters=50000)
+for img in res_imgs:   
+    # 'cpv' for descriptor formed by concatenated pixel values, 'sift' for SIFT descriptor 
+    pan_img = panorama(img, pan_img, iters=50000, descriptor='sift')
 
-    plt.imshow(pan_img, 'gray')
-    plt.show()
+plt.imshow(pan_img, 'gray')
+plt.show()
