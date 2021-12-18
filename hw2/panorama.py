@@ -1,6 +1,8 @@
 import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
+from myHomography import *
+from myMatching import * 
 
 def panorama(img1, img2, iters, descriptor='sift'):
     # Feature detection, descriptor
@@ -21,8 +23,10 @@ def panorama(img1, img2, iters, descriptor='sift'):
         kp2, des2 = sift.detectAndCompute(img2, None)
 
     # Feature matching with ratio test
-    bf = cv.BFMatcher()
-    matches = bf.knnMatch(des1,des2,k=2)
+    # bf = cv.BFMatcher()
+    # matches = bf.knnMatch(des1,des2,k=2)
+    # my function for Feature matching
+    matches = myknn(des1, des2, 2)
     good = []
     for m,n in matches:
         if m.distance < 0.75*n.distance:
@@ -31,7 +35,10 @@ def panorama(img1, img2, iters, descriptor='sift'):
     # Estimation of homography
     src_pts = np.float32([ kp1[m.queryIdx].pt for m in good ]).reshape(-1,1,2)
     dst_pts = np.float32([ kp2[m.trainIdx].pt for m in good ]).reshape(-1,1,2)
-    H, mask = cv.findHomography(src_pts, dst_pts, cv.RANSAC, 5.0, maxIters=2000)
+    # opencv function for Estimation of homography
+    # H, mask = cv.findHomography(src_pts, dst_pts, cv.RANSAC, 5.0, maxIters=2000)
+    # my function for Estimation of homography
+    H = myHomography(src_pts, dst_pts, 5.0, maxIters=50)
 
     # Image stitching
     h,w = img1.shape
