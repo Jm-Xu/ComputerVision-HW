@@ -25,10 +25,8 @@ def FM(img1, img2, descriptor='sift'):
         kp2, des2 = sift.detectAndCompute(img2_gray, None)
 
     # Feature matching with ratio test
-    # bf = cv.BFMatcher()
-    # matches = bf.knnMatch(des1,des2,k=2)
-    # my function for Feature matching
-    matches = myknn(des1, des2, 2)
+    bf = cv.BFMatcher()
+    matches = bf.knnMatch(des1,des2,k=2)
     good = []
     for m,n in matches:
         if m.distance < 0.75*n.distance:
