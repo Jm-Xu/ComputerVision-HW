@@ -9,12 +9,14 @@ def visualize(CATEGORIES, test_image_paths, test_labels_ids, predicted_categorie
     if os.path.isdir(thumbnails_path):
         shutil.rmtree(thumbnails_path)
         os.makedirs(thumbnails_path)
+    else:
+        os.makedirs(thumbnails_path)
 
     results_path = os.path.join(main_path, 'results')
     
     panel = open(os.path.join(results_path, 'visualization.md'), 'w')
     panel.write('## Visualization\n')
-    panel.write('| Category name | Sample training images | Sample true positives | False positives with true label | False negatives with wrong predicted label |\n')
+    panel.write('| Category | Sample training images | Sample true positives | Sample false positives | Sample false negatives |\n')
     panel.write('| :-----------: | :--------------------: | :-------------------: | :-----------------------------: | :----------------------------------------: |\n')
 
     FN_name = [None] * len(CATEGORIES)

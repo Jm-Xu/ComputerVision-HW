@@ -33,7 +33,7 @@ CATE2ID = {v: k for k, v in enumerate(CATEGORIES)}
 ABBR_CATEGORIES = ['Kit', 'Sto', 'Bed', 'Liv', 'Off', 'Ind', 'Sub',
                    'Cty', 'Bld', 'St', 'HW', 'OC', 'Cst', 'Mnt', 'For']
 
-
+# Tiny images representation or Bag of SIFT representation
 # FEATURE = 'tiny_image'
 FEATURE  = 'bag_of_sift'
 
@@ -45,7 +45,7 @@ def main():
     train_image_paths, test_image_paths, train_labels, test_labels = \
         get_image_paths(train_path, test_path)
 
-    # TODO Step 1:
+    # Step 1:
     # Represent each image with the appropriate feature
     # Each function to construct features should return an N x d matrix, where
     # N is the number of paths passed to the function and d is the 
@@ -61,7 +61,7 @@ def main():
         # build_vocabulary
         if os.path.isfile('vocab.pkl') is False:
             print('No existing visual word vocabulary found. Computing one from training images\n')
-            vocab_size = 100   ### Vocab_size is up to you. Larger values will work better (to a point) but be slower to comput.
+            vocab_size = 50   ### Vocab_size is up to you. Larger values will work better (to a point) but be slower to comput.
             vocab = build_vocabulary(train_image_paths, vocab_size)
             with open('vocab.pkl', 'wb') as handle:
                 pickle.dump(vocab, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -85,7 +85,7 @@ def main():
     else:
         raise NameError('Unknown feature type')
 
-    # TODO Step 2: 
+    # Step 2: 
     # Classify each test image by training and using the appropriate classifier
     # Each function to classify test features will return an N x 1 array,
     # where N is the number of test cases and each entry is a string indicating
@@ -108,8 +108,7 @@ def main():
     predicted_categories_ids = [CATE2ID[x] for x in predicted_categories]
     train_labels_ids = [CATE2ID[x] for x in train_labels]
     
-    # Step 3: Build a confusion matrix and score the recognition system
-    # You do not need to code anything in this section. 
+    # Step 3: Build a confusion matrix, score the recognition system and visualize
    
     build_confusion_mtx(test_labels_ids, predicted_categories_ids, ABBR_CATEGORIES)
     visualize(CATEGORIES, test_image_paths, test_labels_ids, predicted_categories_ids, train_image_paths, train_labels_ids)
